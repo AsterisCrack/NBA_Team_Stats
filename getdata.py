@@ -436,8 +436,12 @@ def load(team_season, all_average, player_season, prediction, my_team_data, game
         text = f'The prediction for next game is not available yet'
     pdf.multi_cell(page_width, 10, text, align='C')
     #Save and close pdf
+    #if folder out does not exist, create it
+    if not os.path.exists('out'):
+        os.makedirs('out')
+    pdf.output('out/report.pdf')
     pdf.output('report.pdf')
-
+    
     #delete aux folder and its contents
     for i in os.listdir('aux_folder'):
         os.remove(f'aux_folder/{i}')
