@@ -6,7 +6,7 @@ ADD config.txt  .
 ADD requirements.txt .
 
 # Set the host directory as a volume
-VOLUME out/:out/
+VOLUME HostOut/:out/
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt

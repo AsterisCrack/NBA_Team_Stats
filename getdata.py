@@ -440,7 +440,6 @@ def load(team_season, all_average, player_season, prediction, my_team_data, game
     if not os.path.exists('out'):
         os.makedirs('out')
     pdf.output('out/report.pdf')
-    pdf.output('report.pdf')
     
     #delete aux folder and its contents
     for i in os.listdir('aux_folder'):
