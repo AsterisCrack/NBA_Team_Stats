@@ -5,34 +5,45 @@ import requests
 import pandas as pd
 
 def extract():
-    #Get page
-    page = 'https://www.sportytrader.es/pronosticos/baloncesto/usa/nba-306'
-    pageTree = requests.get(page)
-    #Create soup out of the page
-    Soup = bs(pageTree.content, 'html.parser')
-    #New df
-    df = pd.DataFrame(columns=['Home', 'Away', 'Prediction', 'Date'])
-    #Search for all predictions
-    scores = Soup.find_all('div', class_='flex flex-col xl:flex-row justify-center items-center border-2 border-primary-grayborder rounded-lg p-2 my-4')
-    for score in scores:
-        #Search for the team predicted to win
-        teams = score.find_all('div', class_='w-1/2 text-center break-word p-1 dark:text-white')
-        home = teams[0].text
-        away = teams[1].text
-        #cleaning
-        home = home.strip()
-        away = away.strip()
-        Prediction = score.find('span', class_='flex justify-center items-center h-7 w-6 rounded-md font-semibold bg-primary-green text-white mx-1').text
-        if Prediction == '1':
-            Prediction = home
-        elif Prediction == '2':
-            Prediction = away
-        else:
-            #I don't think the result can be a draw, but just in case
-            Prediction = 'DRAW'
-        date = score.find('span', class_="text-xs dark:text-white").text
-        #Add to df
-        df = pd.concat([pd.DataFrame({'Home': home, 'Away': away, 'Prediction': Prediction, 'Date':date}, index=[0]), df], ignore_index=True)
+    #Get predictions for a single page
+    def get_predictions_single_page(page):
+        pageTree = requests.get(page)
+        #Create soup out of the page
+        Soup = bs(pageTree.content, 'html.parser')
+        #New df
+        df = pd.DataFrame(columns=['Home', 'Away', 'Prediction', 'Date'])
+        #Search for all predictions
+        scores = Soup.find_all('div', class_='flex flex-col xl:flex-row justify-center items-center border-2 border-primary-grayborder rounded-lg p-2 my-4')
+        for score in scores:
+            #Search for the team predicted to win
+            teams = score.find_all('div', class_='w-1/2 text-center break-word p-1 dark:text-white')
+            home = teams[0].text
+            away = teams[1].text
+            #cleaning
+            home = home.strip()
+            away = away.strip()                     
+            Prediction = score.find('span', class_='flex justify-center items-center h-7 w-6 rounded-md font-semibold bg-primary-green text-white mx-1').text
+            if Prediction == '1':
+                Prediction = home
+            elif Prediction == '2':
+                Prediction = away
+            else:
+                #I don't think the result can be a draw, but just in case
+                Prediction = 'DRAW'
+            date = score.find('span', class_="text-xs dark:text-white").text
+            #Add to df
+            df = pd.concat([pd.DataFrame({'Home': home, 'Away': away, 'Prediction': Prediction, 'Date':date}, index=[0]), df], ignore_index=True)
+        return df
+    #This web page can have 2 pages of predictions
+    #The second page appears when you click a button, but we can simulate that by accessing the auxiliary data url that the web page uses
+    page_1 = 'https://www.sportytrader.es/ajax/pronostics1x2/baloncesto/competition-306/1/'
+    page_2 = 'https://www.sportytrader.es/ajax/pronostics1x2/baloncesto/competition-306/2/'
+    df_1 = get_predictions_single_page(page_1)
+    try:
+        df_2 = get_predictions_single_page(page_2)
+    except:
+        df_2 = pd.DataFrame(columns=['Home', 'Away', 'Prediction', 'Date'])
+    df = pd.concat([df_1, df_2], ignore_index=True)
     return df
 
 def transform(df, team):
@@ -70,5 +81,3 @@ def load(df, team):
         print('No predictions for', team)
         prediction = None
     return prediction
-
-

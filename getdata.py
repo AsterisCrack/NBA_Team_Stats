@@ -339,7 +339,10 @@ def load(team_season, all_average, player_season, prediction, my_team_data, game
                 pdf.set_font('helvetica', 'B', 10)
             else:
                 pdf.set_font('helvetica', '', 10)
-            pdf.cell(50, 10, data[i][0], 1, align='C', new_x="RIGHT", new_y="TOP")
+            try:
+                pdf.cell(50, 10, data[i][0], 1, align='C', new_x="RIGHT", new_y="TOP")
+            except:
+                pdf.cell(50, 10, data[i][0].encode().decode('ascii', 'ignore'), 1, align='C', new_x="RIGHT", new_y="TOP")
             for j in range(1, len(data[i])):
                 pdf.cell(20, 10, str(data[i][j]), 1, align='C', new_x="RIGHT", new_y="TOP")
             pdf.ln(10)
