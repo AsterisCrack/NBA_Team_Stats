@@ -12,18 +12,26 @@ The pdf report includes:
 - Graphs to represent some of the player stats.
 - A calendar for the played and scheduled games.
 - A prediction (if available) for next game.
-- 
+
 ## Tutorial
 To execute this project, first download all necessary libraries by running: 
+
 $pip3 install -r requirements.txt
+
 When the libraries finished downloading, modify the "config.txt" folder to insert your API key. To get a key you will need to register in https://sportsdata.io/ first. 
 Then, just substitute the placeholder "key" with your own key (without ", ' or spaces, make sure your key is correct!)
 Finally, just ruun the program by running the following command in your console:
+
 $python getdata.py
+
 
 ## Docker
 Also, you can execute the program with a docker container. To buid the container firsr run:
+
 $docker build -t nba_stats .
+
 Then, when the container is built, just run:
+
 $docker run -it -v /HostOut:/out nba_stats
-MAke sure you first have a folder named "HostOut" in your work directory.
+
+Make sure you first have a folder named "HostOut" in your work directory.
